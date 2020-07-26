@@ -1,0 +1,44 @@
+/* #newTodoAlert{
+    visibility: visible;
+} */
+
+body{
+    background-image: url(/img/watercolor-background-1.jpg);
+}
+.form-group, .table{
+    background-color: rgba(255,255,255,0.7);
+}
+#addTodoButton{
+    margin-top: 15px;
+}
+.savedTodos{
+    margin: 5px;
+    padding: 10px;
+    border-radius: 5px;
+    background-color: rgba(255,255,255,0.7);
+    display: inline-block;
+}
+.alreadyExistingTd{
+    /* width: 100px;
+    height: 100px; */
+    animation-name: tdAnimation;
+    animation-duration: 4s;
+}
+@keyframes tdAnimation {
+    from {background-color: transparent;}
+    to {background-color: yellow;}
+}
+.alreadyExistingSpan{
+    animation-name: spanAnimation;
+    animation-duration: 4s;
+}
+@keyframes spanAnimation {
+    from {background-color: rgba(255,255,255,0.7);}
+    to {background-color: yellow;}
+}
+.logContainer{
+    margin-top: 60px;
+    width: 300px;
+    height: 300px;
+    background-color: tomato;
+}

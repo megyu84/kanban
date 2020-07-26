@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kanban method</title>
+    <link rel="stylesheet" href="/node_modules/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-2">
+
+            </div>
+            <div class="col-8">
+                <h1>Kanban tábla</h1>
+                <div class="form-group">
+                    <input class="form-control form-control-lg" type="text" placeholder="Új teendő" id="newTodoInput">
+                    <button id="addTodoButton" type="button" onclick=addNewTodo() class="btn btn-success">
+                        <i class="fa fa-plus-square" aria-hidden="true"></i>
+                        Hozzáad
+                    </button>
+                    <div id="newTodoAlert" class="alert alert-danger" role="alert">
+                        Ez a teendő már létezik!
+                    </div>
+                </div>
+                <div>
+                    <table class="table" id="todoTable">
+                        <thead>
+                            <tr>
+                                <th scope="col">Elkészíteni</th>
+                                <th scope="col">Folyamatban</th>
+                                <th scope="col">Kész</th>
+                                <th scope="col">Törlés</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+
+                </div>
+                <div id="savedDiv" class="col-8">
+                </div>
+            </div>
+            <div class="col-2">
+                <div class="logContainer">
+                    
+                </div>
+            </div>
+        </div>
+        <div class="col-2">
+
+        </div>
+
+    </div>
+    </div>
+
+
+
+
+    <script src="/js/main.js"></script>
+</body>
+
+</html>
