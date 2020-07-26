@@ -36,7 +36,7 @@ body{
     from {background-color: rgba(255,255,255,0.7);}
     to {background-color: yellow;}
 }
-.logContainer{
+#logContainer{
     margin-top: 60px;
     width: 300px;
     height: 300px;

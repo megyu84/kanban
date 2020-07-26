@@ -1,15 +1,8 @@
-// todosList = [
-//     {id:1, name:"Takarítani", status:"todo"},
-//     {id:2, name:"főzni", status:"proceed"},
-//     {id:3, name:"Boulder", status:"finished"},
-//     {id:4, name:"Valami", status:"finished"}
-
-// ];
-
 let todos = [];
 let proceedTodos = [];
 let finishedTodos = [];
 let savedTodos = [];
+let removedTodos = [];
 //-------------------------------------------------------
 //-------------------F-U-N-C-T-I-O-N-S------------------
 //-------------------------------------------------------
@@ -18,6 +11,7 @@ function initTodoList(todoListFromServer) {
     proceedTodos = [];
     finishedTodos = [];
     savedTodos = [];
+    removedTodos = [];
     for (let i = 0; i < todoListFromServer.length; i++) {
         if (todoListFromServer[i].status == "todo") {
             todos.push(todoListFromServer[i]);
@@ -25,13 +19,12 @@ function initTodoList(todoListFromServer) {
             proceedTodos.push(todoListFromServer[i]);
         } else if (todoListFromServer[i].status == "finished") {
             finishedTodos.push(todoListFromServer[i]);
-        } else {
+        } else if (todoListFromServer[i].status == "saved") {
             savedTodos.push(todoListFromServer[i]);
+        }else{
+            removedTodos.push(todoListFromServer[i]);
         }
     }
-    // console.log("Todos " + todos.length);
-    // console.log("Proceed " + proceedTodos.length);
-    // console.log("Finished " + finishedTodos.length);
     uploadTable();
     uploadSavedTodos();
 }
@@ -111,6 +104,9 @@ function moveToProceed(todo) {
         todo.status = "todo"
     }
     console.log("current index is", todo.id, " new status is ", todo.status);
+    updateDB(todo);
+}
+function updateDB(todo) {
     let fetchOptions = {
         method: 'PUT',
         mode: 'cors',
@@ -124,6 +120,7 @@ function moveToProceed(todo) {
     fetch("http://localhost:3000/todoList/" + todo.id, fetchOptions)
         .then(resp => resp.json())
         .then(resp => loadData());
+
 }
 function createTodoRow(todos) {
     let tr = document.createElement("tr");
@@ -178,18 +175,9 @@ function createTodoRow(todos) {
 }
 function removeTodo(todo) {
     let todoName = todo.name;
-    let fetchOptions = {
-        method: 'DELETE',
-        mode: 'cors',
-        cache: 'no-cache',
-        credentials: 'same-origin'
-    };
-    fetch("http://localhost:3000/todoList/" + todo.id, fetchOptions)
-        .then(resp => resp.json())
-        .then(json => {
-            loadData();
-            showNewTodoAlert(true, `"${todoName}" todo törölve`)
-        });
+    todo.status = "removed";
+    showNewTodoAlert(true, `"${todoName}" todo törölve`);
+    updateDB(todo);
 }
 function loadData() {
     let fetchInit = {
@@ -281,6 +269,27 @@ function showExistingTodo(todoName) {
     }
 }
 
+function loadLogDB(){
+    let fetchInit = {
+        method: "GET",
+        headers: new Headers(),
+        mode: "cors",
+        cache: "default"
+    };
+    const fetchData = fetch("http://localhost:3000/log", fetchInit);
+    fetchData.then(data => data.json()).then(data => initLogDiv(data));
+}
+function initLogDiv(data){
+    let logContainer = document.querySelector("#logContainer");
+    let allTodos = todos.concat(proceedTodos, finishedTodos, savedTodos, removedTodos);
+    for(let logItem of data){
+        let todoID = logItem.todoID;
+        let todoName = allTodos.find(todo => todo.id == todoID).name;
+        console.log("Amit keresünk: ", todoName);
+        logContainer.innerText += todoName + "\n";
+    }
+
+}
 //----------------------------------------------------------
 //----------------------------------------------------------
 //----------------------------------------------------------
@@ -288,3 +297,4 @@ function showExistingTodo(todoName) {
 
 showNewTodoAlert(false);
 loadData();
+loadLogDB();
