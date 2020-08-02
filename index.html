@@ -9,17 +9,72 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
     <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/dailyPanelStyle.css">
 </head>
 
 <body>
     <div class="container">
         <div class="row">
-            <div class="col-2">
+            <div id="iconsDiv" class="col-2">
+                <h2>Ikonok</h2>
+                <div>
+                    <h6>Sport</h6>
+                    <img onclick=selectIcon(this) class="todoIcon" src="/icon/bouldering.png" width=30px
+                        alt="bouldering" title="bouldering">
+                    <img onclick=selectIcon(this) class="todoIcon" src="/icon/running.png" width=30px alt="running"
+                        title="running">
+                    <img onclick=selectIcon(this) class="todoIcon" src="/icon/swimming.png" width=30px alt="swimming"
+                        title="swimming">
+                    <img onclick=selectIcon(this) class="todoIcon" src="/icon/cycling.png" width=30px alt="cycling"
+                        title="cycling">
 
+                    <h6>Házon kívüli</h6>
+                    <img onclick=selectIcon(this) class="todoIcon" src="/icon/watering.png" width=30px alt="watering"
+                        title="watering">
+                    <img onclick=selectIcon(this) class="todoIcon" src="/icon/hammer.png" width=30px alt="hammer"
+                        title="hammer">
+                    <img onclick=selectIcon(this) class="todoIcon" src="/icon/mowing.png" width=30px alt="mowing"
+                        title="mowing">
+                    <img onclick=selectIcon(this) class="todoIcon" src="/icon/painting.png" width=30px alt="painting"
+                        title="painting">
+                    <img onclick=selectIcon(this) class="todoIcon" src="/icon/car.png" width=30px alt="car" title="car">
+                    <img onclick=selectIcon(this) class="todoIcon" src="/icon/work.png" width=30px alt="work"
+                        title="work">
+                    <img onclick=selectIcon(this) class="todoIcon" src="/icon/beach.png" width=30px alt="beach"
+                        title="beach">
+
+                    <h6>Házon belüli</h6>
+                    <img onclick=selectIcon(this) class="todoIcon" src="/icon/tooth.png" width=30px alt="tooth"
+                        title="tooth">
+                    <img onclick=selectIcon(this) class="todoIcon" src="/icon/shower.png" width=30px alt="shower"
+                        title="shower">
+                    <img onclick=selectIcon(this) class="todoIcon" src="/icon/cloths.png" width=30px alt="cloths"
+                        title="cloths">
+                    <img onclick=selectIcon(this) class="todoIcon" src="/icon/cleaning.png" width=30px alt="cleaning"
+                        title="cleaning">
+                    <img onclick=selectIcon(this) class="todoIcon" src="/icon/learning.png" width=30px alt="learning"
+                        title="learning">
+                    <img onclick=selectIcon(this) class="todoIcon" src="/icon/reading.png" width=30px alt="reading"
+                        title="reading">
+                    <img onclick=selectIcon(this) class="todoIcon" src="/icon/dishwashing.png" width=30px
+                        alt="dishwashing" title="dishwashing">
+                    <img onclick=selectIcon(this) class="todoIcon" src="/icon/boiler.png" width=30px alt="boiler"
+                        title="boiler">
+                    <img onclick=selectIcon(this) class="todoIcon" src="/icon/english.png" width=30px alt="english"
+                        title="english">
+
+                    <div>
+                        <a target="_blank" href="https://icons8.com/icons/set/learning">Icons</a> icon by <a
+                            target="_blank" href="https://icons8.com">Icons8</a>
+                    </div>
+                </div>
             </div>
             <div class="col-8">
                 <h1>Kanban tábla</h1>
                 <div class="form-group">
+                    <div id="todoIconDiv">
+                        <!-- <img class="selectedTodoIcon" src="/icon/tooth.png" width=30px alt="tooth"> -->
+                    </div>
                     <input class="form-control form-control-lg" type="text" placeholder="Új teendő" id="newTodoInput">
                     <button id="addTodoButton" type="button" onclick=addNewTodo() class="btn btn-success">
                         <i class="fa fa-plus-square" aria-hidden="true"></i>
@@ -44,12 +99,23 @@
                     </table>
 
                 </div>
-                <div id="savedDiv" class="col-8">
+                <div id="savedDiv">
                 </div>
             </div>
             <div class="col-2">
-                <div id="logContainer">
-                    
+                <div id="rightPanel">
+                    <div id="logButtonsDiv" class="btn-group btn-group-toggle" data-toggle="buttons">
+                        <label class="btn btn-light active">
+                            <input type="radio" name="options" id="option1" autocomplete="off" checked> Log view
+                        </label>
+                        <label class="btn btn-light">
+                            <input type="radio" name="options" id="option2" autocomplete="off"> Daily view
+                        </label>
+                    </div>
+                    <div id="dailyContainer">
+                    </div>
+                    <div id="logContainer">
+                    </div>
                 </div>
             </div>
         </div>
@@ -64,6 +130,7 @@
 
 
     <script src="/js/main.js"></script>
+    <script src="/js/dailyPanel.js"></script>
 </body>
 
 </html>

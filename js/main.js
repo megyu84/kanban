@@ -21,12 +21,13 @@ function initTodoList(todoListFromServer) {
             finishedTodos.push(todoListFromServer[i]);
         } else if (todoListFromServer[i].status == "saved") {
             savedTodos.push(todoListFromServer[i]);
-        }else{
+        } else {
             removedTodos.push(todoListFromServer[i]);
         }
     }
     uploadTable();
     uploadSavedTodos();
+    initDailyPanel();
 }
 
 // upload the saved todos
@@ -43,7 +44,11 @@ function uploadSavedTodos() {
 
 //setup the span element for saved todos
 function setupSpanElement(span, todo) {
-    span.innerText = todo.name;
+    if ('icon' in todo) {
+        span.innerHTML = `<img class="todoIcon" src="/icon/${todo.icon}.png" width=30px alt="${todo.icon}">${todo.name}`;
+    } else {
+        span.innerHTML = todo.name;
+    }
     span.setAttribute("class", "savedTodos");
     span.setAttribute("name", todo.name);
     span.style.cursor = "pointer";
@@ -119,7 +124,10 @@ function updateDB(todo) {
     };
     fetch("http://localhost:3000/todoList/" + todo.id, fetchOptions)
         .then(resp => resp.json())
-        .then(resp => loadData());
+        .then(resp => {
+            loadData();
+            addNewLogItem(todo)
+        });
 
 }
 function createTodoRow(todos) {
@@ -129,8 +137,13 @@ function createTodoRow(todos) {
         if (typeof todo.name == 'undefined') {
             td.innerText = "";
         } else {
+            if ('icon' in todo) {
+                console.log(todo, "This todo has an icon");
+                td.innerHTML = `<img class="todoIcon" src="/icon/${todo.icon}.png" width=30px alt="${todo.icon}">${todo.name}`;
+            } else {
+                td.innerHTML = todo.name;
+            }
             td.style.cursor = "pointer";
-            td.innerText = todo.name;
             td.setAttribute("name", todo.name);
             td.addEventListener("click", function (event) {
                 moveToProceed(todo);
@@ -178,6 +191,7 @@ function removeTodo(todo) {
     todo.status = "removed";
     showNewTodoAlert(true, `"${todoName}" todo törölve`);
     updateDB(todo);
+    // addNewLogItem(todo);
 }
 function loadData() {
     let fetchInit = {
@@ -193,6 +207,9 @@ function loadData() {
 function addNewTodo() {
     let newTodo = document.querySelector("#newTodoInput");
     console.log("Todo: ", newTodo.value);
+    let iconImg = document.querySelector("#selectedTodoIcon");
+    console.log("Todo img: ", iconImg);
+
     let isExist = checkingNewTodoExist(newTodo.value);
     if (newTodo.value.trim() == "") {
         isExist = true;
@@ -200,6 +217,13 @@ function addNewTodo() {
         console.log("Üres todo");
     }
     if (!isExist) {
+        let todo;
+        if (iconImg) {
+            todo = { name: newTodo.value, status: "todo", icon: iconImg.getAttribute("alt") };
+            //console.log(todo);
+        } else {
+            todo = { name: newTodo.value, status: "todo" };
+        }
         let fetchOptions = {
             method: 'POST',
             mode: 'cors',
@@ -208,7 +232,7 @@ function addNewTodo() {
                 'Content-Type': 'application/json'
             },
             credentials: 'same-origin',
-            body: JSON.stringify({ name: newTodo.value, status: "todo" })
+            body: JSON.stringify(todo)
         };
         fetch("http://localhost:3000/todoList/", fetchOptions)
             .then(
@@ -219,11 +243,14 @@ function addNewTodo() {
                 console.log(json);
                 newTodo.value = "";
                 loadData();
+                todo.id = json.id;
+                addNewLogItem(todo);
             });
     } else {
         showNewTodoAlert(isExist, "Ez a todo már létezik.");
         showExistingTodo(newTodo.value);
     }
+    document.querySelector("#todoIconDiv").innerHTML = "";
 }
 //check if the new todo is unique
 function checkingNewTodoExist(newtodo) {
@@ -269,7 +296,7 @@ function showExistingTodo(todoName) {
     }
 }
 
-function loadLogDB(){
+function loadLogDB() {
     let fetchInit = {
         method: "GET",
         headers: new Headers(),
@@ -279,16 +306,129 @@ function loadLogDB(){
     const fetchData = fetch("http://localhost:3000/log", fetchInit);
     fetchData.then(data => data.json()).then(data => initLogDiv(data));
 }
-function initLogDiv(data){
-    let logContainer = document.querySelector("#logContainer");
+function initLogDiv(data) {
+    // let logContainer = document.querySelector("#logContainer");
     let allTodos = todos.concat(proceedTodos, finishedTodos, savedTodos, removedTodos);
-    for(let logItem of data){
+    for (let logItem of data) {
         let todoID = logItem.todoID;
-        let todoName = allTodos.find(todo => todo.id == todoID).name;
-        console.log("Amit keresünk: ", todoName);
-        logContainer.innerText += todoName + "\n";
+        //let todoName = allTodos.find(todoItem => todoItem.id == todoID).name;
+        let todo = allTodos.find(({ id }) => id == todoID);
+        //let todoName = result.name;
+        //console.log("Amit keresünk: ", todoName);
+        // logContainer.innerText += todoName + "\n";
+        createNewLogSpan(logItem, todo);
     }
+}
+function addNewLogItem(todo) {
+    //console.log("new log: ", todo);
+    let logItem = createLogItem(todo);
+    let fetchOptions = {
+        method: 'POST',
+        mode: 'cors',
+        cache: 'no-cache',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        credentials: 'same-origin',
+        body: JSON.stringify(logItem)
+    };
+    fetch("http://localhost:3000/log/", fetchOptions)
+        .then(
+            resp => resp.json(),
+            err => console.error(err)
+        )
+        .then(json => {
+            console.log(json);
+        });
+    createNewLogSpan(logItem, todo);
+    refreshDailyPanel(logItem);
 
+
+}
+function createNewLogSpan(logItem, todo) {
+    logDiv = document.createElement("div");
+    logDiv.setAttribute("class", "logDiv");
+
+    timestampSpan = document.createElement("span");
+    timestampSpan.setAttribute("class", "timestampSpan");
+    timestampSpan.innerText = logItem.timestamp;
+
+    labelSpan = document.createElement("span");
+    labelSpan.setAttribute("class", `${logItem.label}LabelSpan labelSpan`);
+    labelSpan.innerText = getLabel(logItem.label);
+
+    todoSpan = document.createElement("span");
+    todoSpan.setAttribute("class", "todoSpan");
+    todoSpan.innerText = todo.name;
+    logDiv.appendChild(timestampSpan);
+    logDiv.appendChild(labelSpan);
+    logDiv.appendChild(todoSpan);
+
+    // logDiv.innerText += todo.name + "\n";
+    let logContainer = document.querySelector("#logContainer");
+    logContainer.appendChild(logDiv);
+    logContainer.scrollTo(0, logContainer.scrollHeight);
+}
+function getLabel(todoStatus) {
+    if (todoStatus == "removed") {
+        return "Törölve";
+    } else if (todoStatus == "todo") {
+        return "Hozzáadva";
+    } else if (todoStatus == "proceed") {
+        return "Elkezdve";
+    } else if (todoStatus == "saved") {
+        return "Mentve";
+    } else if (todoStatus == "finished") {
+        return "Befejezve";
+    } else {
+        console.error("Azonosítatlan státusz");
+        return "undefined";
+    }
+}
+
+
+function createLogItem(todo) {
+
+    let log = {};
+    log.timestamp = getFormattedCurrentDataAndTime();
+    log.todoID = todo.id;
+    log.label = todo.status;
+    return log;
+}
+
+//get current date and time and returns it formatted form
+function getFormattedCurrentDataAndTime() {
+    let currentdate = new Date();
+    let year = currentdate.getFullYear();
+    let month = currentdate.getMonth();
+    month++;
+    if (month < 10) {
+        month = "0" + month;
+    }
+    let day = currentdate.getDate();
+    if (day < 10) {
+        day = "0" + day;
+    }
+    let hour = currentdate.getHours();
+    if (hour < 10) {
+        hour = "0" + hour;
+    }
+    let minute = currentdate.getMinutes();
+    if (minute < 10) {
+        minute = "0" + minute;
+    }
+    let timestamp = year + "." + month + "." + day + " " + hour + ":" + minute;
+    return timestamp;
+}
+function selectIcon(selectedIcon) {
+    let iconDiv = document.querySelector("#todoIconDiv");
+    iconDiv.innerHTML = "";
+    console.log(selectedIcon.getAttribute("src"));
+    let todoIcon = document.createElement("img");
+    todoIcon.setAttribute("src", selectedIcon.getAttribute("src"));
+    todoIcon.setAttribute("id", "selectedTodoIcon");
+    todoIcon.setAttribute("alt", selectedIcon.getAttribute("alt"));
+    iconDiv.appendChild(todoIcon);
 }
 //----------------------------------------------------------
 //----------------------------------------------------------
@@ -298,3 +438,35 @@ function initLogDiv(data){
 showNewTodoAlert(false);
 loadData();
 loadLogDB();
+
+//logViewButton
+document.querySelector("#option1").onclick = function () {
+    if (this.checked) {
+        toggleButtons(this,document.querySelector("#option2"));
+        let logContainer=document.querySelector("#logContainer");
+        let dailyContainer=document.querySelector("#dailyContainer");
+        togglePanels(dailyContainer, logContainer);
+    }
+};
+
+//dailyViewButton
+document.querySelector("#option2").onclick = function () {
+    if (this.checked) {
+        toggleButtons(this,document.querySelector("#option1"));
+        let logContainer=document.querySelector("#logContainer");
+        let dailyContainer=document.querySelector("#dailyContainer");
+        togglePanels(logContainer, dailyContainer);
+        dailyContainer.scrollTo(0, dailyContainer.scrollHeight);
+    }
+};
+
+function toggleButtons(button1, button2){
+    button2.checked = false;
+    button2.parentElement.setAttribute("class", "btn btn-light");
+    button1.checked = true;
+    button1.parentElement.setAttribute("class", "btn btn-light active");
+}
+function togglePanels(panel1, panel2){
+    panel1.style.display = 'none';
+    panel2.style.display = 'block';
+}
