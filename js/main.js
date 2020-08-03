@@ -390,15 +390,15 @@ function getLabel(todoStatus) {
 function createLogItem(todo) {
 
     let log = {};
-    log.timestamp = getFormattedCurrentDataAndTime();
+    log.timestamp = getFormattedCurrentDataAndTime(new Date());
     log.todoID = todo.id;
     log.label = todo.status;
     return log;
 }
 
 //get current date and time and returns it formatted form
-function getFormattedCurrentDataAndTime() {
-    let currentdate = new Date();
+function getFormattedCurrentDataAndTime(currentdate) {
+    //let currentdate = new Date();
     let year = currentdate.getFullYear();
     let month = currentdate.getMonth();
     month++;

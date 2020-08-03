@@ -6,17 +6,42 @@
     background-color: rgba(255,255,255,0.7);
     border-radius: 5px;
 }
+#dailyContainer div{
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
 .dayDiv{
     text-align: center;
     font-weight: bolder;
     font-size: larger;
+    background-color: rgba(46, 44, 46, 0.5);
+    color:white;
 }
 .dailyItem-todo{
     background-color: rgba(218, 73, 205, 0.4);
+    font-weight: bold;
+    padding-left: 10px;
 }
 .dailyItem-proceed{
     background-color: rgba(219, 206, 84, 0.4);
+    font-weight: bold;
+    padding-left: 10px;
 }
 .dailyItem-finished{
     background-color: rgba(45, 177, 60, 0.4);
+    font-weight: bold;
+    padding-left: 10px;
+}
+.dailyItem-todoidle{
+    background-color: rgba(243, 174, 237, 0.4);
+    padding-left: 10px;
+}
+.dailyItem-proceedidle{
+    background-color: rgba(195, 190, 145, 0.4);
+    padding-left: 10px;
+}
+.idleSpan{
+    float: right;
+    font-style: italic;
+    margin-right: 10px;
 }
