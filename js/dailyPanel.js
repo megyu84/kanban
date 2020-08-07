@@ -12,7 +12,6 @@ function initDailyPanel() {
     const fetchData = fetch("http://localhost:3000/log", fetchInit);
     fetchData.then(data => data.json()).then(data => {
         createDailyList(data);
-        // console.log(dailyArray);
         uploadTodoArray();
     });
 }
@@ -23,8 +22,9 @@ function createDailyList(logData) {
     let logsWithRequiredStatus = logData.filter(log => (log.label == "todo" || log.label == "proceed" || log.label == "finished"));
     //sorted by timestamp
     logsWithRequiredStatus.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+    //console.log("sorted list: ", logsWithRequiredStatus);
     for (let i = 0; i < logsWithRequiredStatus.length; i++) {
-        logsWithRequiredStatus[i].timestamp = logsWithRequiredStatus[i].timestamp.substr(0, 10);
+        //logsWithRequiredStatus[i].timestamp = logsWithRequiredStatus[i].timestamp.substr(0, 10);
         uploadDailyArray(logsWithRequiredStatus[i]);
     }
     addIdleItems();
@@ -33,7 +33,6 @@ function createDailyList(logData) {
     if (idleArray.length > 0) {
         dailyArray = dailyArray.concat(idleArray);
         dailyArray = dailyArray.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
-        console.log("testArray: ", dailyArray);
     }
 }
 //if a log remains in todo or proceed state
@@ -61,21 +60,23 @@ function checkAndPutIdleForNextDays(dailyArrayItem) {
     } else {
         checkedLabel = "finished"
     }
-    console.log("ch lab: ", checkedLabel);
+    // console.log("daily item's ",dailyArrayItem.todoID," label ", dailyArrayItem.label, " ch lab: ", checkedLabel);
     let checkedDay = new Date(dailyArrayItem.timestamp);
     checkedDay.setDate(checkedDay.getDate() + 1);
     let checkedDayString = getFormattedCurrentDataAndTime(checkedDay).substr(0, 10);
     while (checkedDayString <= today) {
-        let foundIdx = dailyArray.findIndex(obj => obj.label == checkedLabel &&
-            obj.timestamp == checkedDayString &&
-            obj.todoID == dailyArrayItem.todoID);
+        let foundIdx = dailyArray.findIndex(obj => 
+            obj.todoID == dailyArrayItem.todoID &&
+            (obj.label == checkedLabel || obj.label == "finished") &&
+            obj.timestamp.substr(0, 10) == checkedDayString);
         if (foundIdx == -1) {
             //add idle log
             let idleItem = {};
-            idleItem.timestamp = checkedDayString;
+            idleItem.timestamp = getFormattedCurrentDataAndTime(checkedDay);
             idleItem.todoID = dailyArrayItem.todoID;
             idleItem.label = dailyArrayItem.label + idle_tag;
             idleArray.push(idleItem);
+            //console.log("adding idle ", dailyArrayItem.todoID, " label ", dailyArrayItem.label, " checked lab: ", checkedLabel);
             //and check the next day
             checkedDay.setDate(checkedDay.getDate() + 1);
             checkedDayString = getFormattedCurrentDataAndTime(checkedDay).substr(0, 10);
@@ -90,36 +91,47 @@ function checkAndPutIdleForNextDays(dailyArrayItem) {
 
 function uploadDailyArray(logItem) {
     if (logItem.label == "todo") {
-        //DO NOTHING
         dailyArray.push(logItem);
-        // console.log(logItem," added");
     } else if (logItem.label == "proceed") {
-        // check if there is todo label on the same day and with the same todoID
-        // if so, delete it
         checkAndReplace(logItem, "todo");
     } else if (logItem.label == "finished") {
         checkAndReplace(logItem, "proceed");
     }
 }
+// check if there is todo label on the same day and with the same todoID
+// if so, delete it
 function checkAndReplace(currentLog, oldLabel) {
-    let foundIdx = dailyArray.findIndex(obj => obj.label == oldLabel &&
-        obj.timestamp == currentLog.timestamp &&
-        obj.todoID == currentLog.todoID);
+    let foundIdx = dailyArray.findIndex(obj => 
+        obj.todoID == currentLog.todoID &&
+        obj.label == oldLabel &&
+        isOnTheSameDay(obj.timestamp, currentLog.timestamp) &&
+        new Date(obj.timestamp) < new Date(currentLog.timestamp)
+        );
     if (foundIdx != -1) {
         dailyArray[foundIdx] = currentLog;
     } else {
         dailyArray.push(currentLog);
     }
 }
+
+function isOnTheSameDay(timestamp1, timestamp2){
+    if(timestamp1.substr(0,10)==timestamp2.substr(0,10)){
+        return true;
+    }else{
+        return false;
+    }
+}
+
 function createDailyPanel() {
     let dailyContainer = document.querySelector("#dailyContainer");
     dailyContainer.innerHTML = "";
     if (dailyArray.length != 0) {
-        let currentDay = dailyArray[0].timestamp;
+        let currentDay = dailyArray[0].timestamp.substr(0,10);
         addDayDiv(currentDay);
         for (let i = 0; i < dailyArray.length; i++) {
-            if (dailyArray[i].timestamp > currentDay) {
-                currentDay = dailyArray[i].timestamp;
+            todoDate = dailyArray[i].timestamp.substr(0,10);
+            if (todoDate > currentDay) {
+                currentDay = todoDate;
                 addDayDiv(currentDay);
             }
             let todoID = dailyArray[i].todoID;

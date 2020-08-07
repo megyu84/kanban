@@ -1,7 +1,7 @@
 #dailyContainer{
     display: none;
     width: 280px;
-    height: 500px;
+    max-height: 700px;
     overflow-y: auto;
     background-color: rgba(255,255,255,0.7);
     border-radius: 5px;

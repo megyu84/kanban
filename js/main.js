@@ -34,7 +34,7 @@ function initTodoList(todoListFromServer) {
 function uploadSavedTodos() {
     let savedDiv = document.querySelector("#savedDiv");
     savedDiv.innerHTML = "";
-    console.log("saved:", savedTodos);
+    // console.log("saved:", savedTodos);
     for (savedTodo of savedTodos) {
         let span = document.createElement("span");
         setupSpanElement(span, savedTodo);
@@ -62,7 +62,7 @@ function uploadTable() {
     let todoTable = document.querySelector("#todoTable tbody");
     todoTable.innerHTML = "";
     let maxArrayLength = setMaxElement();
-    console.log(maxArrayLength);
+    // console.log(maxArrayLength);
     initTodoArrays(maxArrayLength);
     for (let i = 0; i < maxArrayLength; i++) {
         todoTable.appendChild(createTodoRow([todos[i], proceedTodos[i], finishedTodos[i]]));
@@ -138,7 +138,7 @@ function createTodoRow(todos) {
             td.innerText = "";
         } else {
             if ('icon' in todo) {
-                console.log(todo, "This todo has an icon");
+                // console.log(todo, "This todo has an icon");
                 td.innerHTML = `<img class="todoIcon" src="/icon/${todo.icon}.png" width=30px alt="${todo.icon}">${todo.name}`;
             } else {
                 td.innerHTML = todo.name;
@@ -304,7 +304,10 @@ function loadLogDB() {
         cache: "default"
     };
     const fetchData = fetch("http://localhost:3000/log", fetchInit);
-    fetchData.then(data => data.json()).then(data => initLogDiv(data));
+    fetchData.then(data => data.json()).then(
+        data => initLogDiv(data),
+        error => console.log("log olvasási hiba ",error)
+        );
 }
 function initLogDiv(data) {
     // let logContainer = document.querySelector("#logContainer");
@@ -335,23 +338,26 @@ function addNewLogItem(todo) {
     fetch("http://localhost:3000/log/", fetchOptions)
         .then(
             resp => resp.json(),
-            err => console.error(err)
+            err => console.error("xxx", err)
         )
-        .then(json => {
-            console.log(json);
-        });
-    createNewLogSpan(logItem, todo);
-    refreshDailyPanel(logItem);
+        .then(
+            json => {
+                console.log(json);
+                createNewLogSpan(logItem);
+                refreshDailyPanel(logItem);
+            },
+            err => console.error("...", err)
+        );
 
 
 }
-function createNewLogSpan(logItem, todo) {
+function createNewLogSpan(logItem) {
     logDiv = document.createElement("div");
     logDiv.setAttribute("class", "logDiv");
 
     timestampSpan = document.createElement("span");
     timestampSpan.setAttribute("class", "timestampSpan");
-    timestampSpan.innerText = logItem.timestamp;
+    timestampSpan.innerText = logItem.timestamp.substr(0,10);
 
     labelSpan = document.createElement("span");
     labelSpan.setAttribute("class", `${logItem.label}LabelSpan labelSpan`);
@@ -359,7 +365,13 @@ function createNewLogSpan(logItem, todo) {
 
     todoSpan = document.createElement("span");
     todoSpan.setAttribute("class", "todoSpan");
-    todoSpan.innerText = todo.name;
+
+    // todoSpan.innerText = todo.name;
+    let allTodos = todos.concat(proceedTodos, finishedTodos, savedTodos, removedTodos);
+    
+    let findTodo = allTodos.find(({ id }) => id == logItem.todoID);
+    //console.log(findTodo.name);
+    todoSpan.innerText = findTodo.name;
     logDiv.appendChild(timestampSpan);
     logDiv.appendChild(labelSpan);
     logDiv.appendChild(todoSpan);
@@ -417,7 +429,13 @@ function getFormattedCurrentDataAndTime(currentdate) {
     if (minute < 10) {
         minute = "0" + minute;
     }
-    let timestamp = year + "." + month + "." + day + " " + hour + ":" + minute;
+    let sec = currentdate.getSeconds();
+    if (sec < 10) {
+        sec = "0" + sec;
+    }
+    //let ms = currentdate.getMilliseconds();
+
+    let timestamp = year + "." + month + "." + day + " " + hour + ":" + minute + ":" + sec;
     return timestamp;
 }
 function selectIcon(selectedIcon) {
@@ -442,9 +460,9 @@ loadLogDB();
 //logViewButton
 document.querySelector("#option1").onclick = function () {
     if (this.checked) {
-        toggleButtons(this,document.querySelector("#option2"));
-        let logContainer=document.querySelector("#logContainer");
-        let dailyContainer=document.querySelector("#dailyContainer");
+        toggleButtons(this, document.querySelector("#option2"));
+        let logContainer = document.querySelector("#logContainer");
+        let dailyContainer = document.querySelector("#dailyContainer");
         togglePanels(dailyContainer, logContainer);
     }
 };
@@ -452,21 +470,21 @@ document.querySelector("#option1").onclick = function () {
 //dailyViewButton
 document.querySelector("#option2").onclick = function () {
     if (this.checked) {
-        toggleButtons(this,document.querySelector("#option1"));
-        let logContainer=document.querySelector("#logContainer");
-        let dailyContainer=document.querySelector("#dailyContainer");
+        toggleButtons(this, document.querySelector("#option1"));
+        let logContainer = document.querySelector("#logContainer");
+        let dailyContainer = document.querySelector("#dailyContainer");
         togglePanels(logContainer, dailyContainer);
         dailyContainer.scrollTo(0, dailyContainer.scrollHeight);
     }
 };
 
-function toggleButtons(button1, button2){
+function toggleButtons(button1, button2) {
     button2.checked = false;
     button2.parentElement.setAttribute("class", "btn btn-light");
     button1.checked = true;
     button1.parentElement.setAttribute("class", "btn btn-light active");
 }
-function togglePanels(panel1, panel2){
+function togglePanels(panel1, panel2) {
     panel1.style.display = 'none';
     panel2.style.display = 'block';
 }
