@@ -30,87 +30,7 @@ function initTodoList(todoListFromServer) {
     initDailyPanel();
 }
 
-// upload the saved todos
-function uploadSavedTodos() {
-    let savedDiv = document.querySelector("#savedDiv");
-    savedDiv.innerHTML = "";
-    // console.log("saved:", savedTodos);
-    for (savedTodo of savedTodos) {
-        let span = document.createElement("span");
-        setupSpanElement(span, savedTodo);
-        savedDiv.appendChild(span);
-    }
-}
 
-//setup the span element for saved todos
-function setupSpanElement(span, todo) {
-    if ('icon' in todo) {
-        span.innerHTML = `<img class="todoIcon" src="/icon/${todo.icon}.png" width=30px alt="${todo.icon}">${todo.name}`;
-    } else {
-        span.innerHTML = todo.name;
-    }
-    span.setAttribute("class", "savedTodos");
-    span.setAttribute("name", todo.name);
-    span.style.cursor = "pointer";
-    span.addEventListener("click", function (event) {
-        moveToProceed(todo);
-    });
-}
-
-// upload table with todo data 
-function uploadTable() {
-    let todoTable = document.querySelector("#todoTable tbody");
-    todoTable.innerHTML = "";
-    let maxArrayLength = setMaxElement();
-    // console.log(maxArrayLength);
-    initTodoArrays(maxArrayLength);
-    for (let i = 0; i < maxArrayLength; i++) {
-        todoTable.appendChild(createTodoRow([todos[i], proceedTodos[i], finishedTodos[i]]));
-    }
-
-}
-//define the longest array
-function setMaxElement() {
-    let max = todos.length;
-    if (max < proceedTodos.length) {
-        max = proceedTodos.length;
-    }
-    if (max < finishedTodos.length) {
-        max = finishedTodos.length;
-    }
-    // console.log("Max = " + max);
-    return max;
-}
-//fill the shorter arrays with ""
-function initTodoArrays(max) {
-    for (let i = 0; i < max; i++) {
-        if (todos.length <= i) {
-            todos[i] = "";
-        }
-        if (proceedTodos.length <= i) {
-            proceedTodos[i] = "";
-        }
-        if (finishedTodos.length <= i) {
-            finishedTodos[i] = "";
-        }
-
-    }
-}
-
-//change the status of the clicked element
-function moveToProceed(todo) {
-    if (todo.status == "todo") {
-        todo.status = "proceed";
-    } else if (todo.status == "proceed") {
-        todo.status = "finished"
-    } else if (todo.status == "finished") {
-        todo.status = "saved"
-    } else {
-        todo.status = "todo"
-    }
-    console.log("current index is", todo.id, " new status is ", todo.status);
-    updateDB(todo);
-}
 function updateDB(todo) {
     let fetchOptions = {
         method: 'PUT',
@@ -130,66 +50,11 @@ function updateDB(todo) {
         });
 
 }
-function createTodoRow(todos) {
-    let tr = document.createElement("tr");
-    for (let todo of todos) {
-        let td = document.createElement("td");
-        if (typeof todo.name == 'undefined') {
-            td.innerText = "";
-        } else {
-            if ('icon' in todo) {
-                // console.log(todo, "This todo has an icon");
-                td.innerHTML = `<img class="todoIcon" src="/icon/${todo.icon}.png" width=30px alt="${todo.icon}">${todo.name}`;
-            } else {
-                td.innerHTML = todo.name;
-            }
-            td.style.cursor = "pointer";
-            td.setAttribute("name", todo.name);
-            td.addEventListener("click", function (event) {
-                moveToProceed(todo);
-            });
-            // td.addEventListener("mouseover", function (event) {
-            //     td.style.textDecoration = "underline";
-            // });
-            td.addEventListener("mouseout", function (event) {
-                td.style.textDecoration = "initial";
-            });
-        }
-        tr.appendChild(td);
-    }
-    let buttonTd = document.createElement("td");
-    if (todos[2].status == "finished") {
-        let button = document.createElement("button");
-        let icon = document.createElement("icon");
-        icon.innerHTML = '<i class="fa fa-trash" aria-hidden="true"></i>';
-        button.appendChild(icon);
-        button.setAttribute("type", "button");
-        button.setAttribute("class", "btn btn-danger");
-        buttonTd.appendChild(button);
-        buttonTd.addEventListener("click", function (event) {
-            removeTodo(todos[2]);
-        });
-        buttonTd.addEventListener("mouseover", function (event) {
-            tr.childNodes[2].style.backgroundColor = "rgba(249,172,196, 0.5)";
-            tr.childNodes[2].style.color = "red";
-            tr.childNodes[2].style.textDecoration = "underline";
 
-        });
-        buttonTd.addEventListener("mouseout", function (event) {
-            tr.childNodes[2].style.backgroundColor = "transparent";
-            tr.childNodes[2].style.color = "black";
-            tr.childNodes[2].style.textDecoration = "initial";
-        });
-    } else {
-        buttonTd.innerText = "";
-    }
-    tr.appendChild(buttonTd);
-    return tr;
-}
 function removeTodo(todo) {
     let todoName = todo.name;
     todo.status = "removed";
-    showNewTodoAlert(true, `"${todoName}" todo törölve`);
+    showNewTodoAlert(true, `"${todoName}" todo törölve`, "red");
     updateDB(todo);
     // addNewLogItem(todo);
 }
@@ -204,97 +69,18 @@ function loadData() {
     fetchData.then(data => data.json()).then(data => initTodoList(data));
 }
 
-function addNewTodo() {
-    let newTodo = document.querySelector("#newTodoInput");
-    console.log("Todo: ", newTodo.value);
-    let iconImg = document.querySelector("#selectedTodoIcon");
-    console.log("Todo img: ", iconImg);
 
-    let isExist = checkingNewTodoExist(newTodo.value);
-    if (newTodo.value.trim() == "") {
-        isExist = true;
-        showNewTodoAlert(isExist, "Nincs használható tartalom.");
-        console.log("Üres todo");
-    }
-    if (!isExist) {
-        let todo;
-        if (iconImg) {
-            todo = { name: newTodo.value, status: "todo", icon: iconImg.getAttribute("alt") };
-            //console.log(todo);
-        } else {
-            todo = { name: newTodo.value, status: "todo" };
-        }
-        let fetchOptions = {
-            method: 'POST',
-            mode: 'cors',
-            cache: 'no-cache',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            credentials: 'same-origin',
-            body: JSON.stringify(todo)
-        };
-        fetch("http://localhost:3000/todoList/", fetchOptions)
-            .then(
-                resp => resp.json(),
-                err => console.error(err)
-            )
-            .then(json => {
-                console.log(json);
-                newTodo.value = "";
-                loadData();
-                todo.id = json.id;
-                addNewLogItem(todo);
-            });
-    } else {
-        showNewTodoAlert(isExist, "Ez a todo már létezik.");
-        showExistingTodo(newTodo.value);
-    }
-    document.querySelector("#todoIconDiv").innerHTML = "";
-}
-//check if the new todo is unique
-function checkingNewTodoExist(newtodo) {
-    //console.log(newtodo);
-    let allTodos = todos.concat(proceedTodos, finishedTodos, savedTodos);
-    let existTodo = allTodos.some(todo => todo.name == newtodo);
-    return existTodo;
-}
-function showNewTodoAlert(showAlert, message) {
-    let newTodoAlert = document.querySelector("#newTodoAlert");
-    if (showAlert) {
-        newTodoAlert.innerText = message;
-        newTodoAlert.style.visibility = "visible";
-        setTimeout(function () { newTodoAlert.style.visibility = "hidden"; }, 2000);
-    } else {
-        newTodoAlert.style.visibility = "hidden";
-    }
-}
+
+
 //pushing enter key to add a new todo
 let newTodoInput = document.querySelector("#newTodoInput");
 newTodoInput.addEventListener("keyup", function (event) {
     if (event.keyCode === 13) {
-        addNewTodo();
+        addNewTodo("todo");
     }
 }
 );
-//indicates the already created todo
-function showExistingTodo(todoName) {
-    let td = document.querySelector(`.table td[name="${todoName}"]`);
-    if (td == null) {
-        //try to search in saved todos
-        let span = document.querySelector(`.savedTodos[name="${todoName}"]`);
-        if (span == null) {
-            console.log("Todo is new.");
-        } else {
-            span.setAttribute("class", "alreadyExistingSpan savedTodos");
-            setTimeout(function () { span.classList.remove("alreadyExistingSpan"); }, 4000);
-        }
-    } else {
-        td.setAttribute("class", "alreadyExistingTd");
-        setTimeout(function () { td.classList.remove("alreadyExistingTd"); }, 4000);
 
-    }
-}
 
 function loadLogDB() {
     let fetchInit = {
@@ -306,8 +92,8 @@ function loadLogDB() {
     const fetchData = fetch("http://localhost:3000/log", fetchInit);
     fetchData.then(data => data.json()).then(
         data => initLogDiv(data),
-        error => console.log("log olvasási hiba ",error)
-        );
+        error => console.log("log olvasási hiba ", error)
+    );
 }
 function initLogDiv(data) {
     // let logContainer = document.querySelector("#logContainer");
@@ -357,7 +143,7 @@ function createNewLogSpan(logItem) {
 
     timestampSpan = document.createElement("span");
     timestampSpan.setAttribute("class", "timestampSpan");
-    timestampSpan.innerText = logItem.timestamp.substr(0,10);
+    timestampSpan.innerText = logItem.timestamp.substr(0, 10);
 
     labelSpan = document.createElement("span");
     labelSpan.setAttribute("class", `${logItem.label}LabelSpan labelSpan`);
@@ -368,7 +154,7 @@ function createNewLogSpan(logItem) {
 
     // todoSpan.innerText = todo.name;
     let allTodos = todos.concat(proceedTodos, finishedTodos, savedTodos, removedTodos);
-    
+
     let findTodo = allTodos.find(({ id }) => id == logItem.todoID);
     //console.log(findTodo.name);
     todoSpan.innerText = findTodo.name;
@@ -448,11 +234,45 @@ function selectIcon(selectedIcon) {
     todoIcon.setAttribute("alt", selectedIcon.getAttribute("alt"));
     iconDiv.appendChild(todoIcon);
 }
-//----------------------------------------------------------
-//----------------------------------------------------------
-//----------------------------------------------------------
-//----------------------------------------------------------
+function toggleButtons(button1, button2) {
+    button2.checked = false;
+    button2.parentElement.setAttribute("class", "btn btn-light");
+    button1.checked = true;
+    button1.parentElement.setAttribute("class", "btn btn-light active");
+}
+function togglePanels(panel1, panel2) {
+    panel1.style.display = 'none';
+    panel2.style.display = 'block';
+}
 
+//watch screen size and change the place of the left and right panel if necessary
+function checkScreenSize(){
+    let rightPanelBigScreen = document.querySelector("#rightPanelBigScreen");
+    let rightPanelSmallScreen = document.querySelector("#rightPanelSmallScreen");
+    let rightPanel = document.querySelector("#rightPanel");
+    
+    let iconsForSmallScreen = document.querySelector("#iconsForSmallScreen");
+    let iconsForBigScreen = document.querySelector("#iconsForBigScreen");
+    let iconDiv = document.querySelector("#iconsDiv");
+
+    if(window.innerWidth < 1200){
+        rightPanelSmallScreen.appendChild(rightPanel);
+        iconsForSmallScreen.appendChild(iconDiv);
+    }else{
+        rightPanelBigScreen.appendChild(rightPanel);
+        iconsForBigScreen.appendChild(iconDiv);
+    }
+}
+
+//----------------------------------------------------------
+//----------------------------------------------------------
+//----------------------------------------------------------
+//----------------------------------------------------------
+window.onresize = () => {
+    checkScreenSize();
+}
+
+checkScreenSize();
 showNewTodoAlert(false);
 loadData();
 loadLogDB();
@@ -477,14 +297,3 @@ document.querySelector("#option2").onclick = function () {
         dailyContainer.scrollTo(0, dailyContainer.scrollHeight);
     }
 };
-
-function toggleButtons(button1, button2) {
-    button2.checked = false;
-    button2.parentElement.setAttribute("class", "btn btn-light");
-    button1.checked = true;
-    button1.parentElement.setAttribute("class", "btn btn-light active");
-}
-function togglePanels(panel1, panel2) {
-    panel1.style.display = 'none';
-    panel2.style.display = 'block';
-}

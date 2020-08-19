@@ -10,97 +10,113 @@
 
     <link rel="stylesheet" href="/css/style.css">
     <link rel="stylesheet" href="/css/dailyPanelStyle.css">
+    <link rel="stylesheet" href="/css/savedTodos.css">
+    <link rel="stylesheet" href="/css/kanbanTable.css">
 </head>
 
 <body>
-    <div class="container">
+    <div class="container-fluid">
         <div class="row">
-            <div id="iconsDiv" class="col-2">
-                <h2>Ikonok</h2>
-                <div>
-                    <h6>Sport</h6>
-                    <img onclick=selectIcon(this) class="todoIcon" src="/icon/bouldering.png" width=30px
-                        alt="bouldering" title="bouldering">
-                    <img onclick=selectIcon(this) class="todoIcon" src="/icon/running.png" width=30px alt="running"
-                        title="running">
-                    <img onclick=selectIcon(this) class="todoIcon" src="/icon/swimming.png" width=30px alt="swimming"
-                        title="swimming">
-                    <img onclick=selectIcon(this) class="todoIcon" src="/icon/cycling.png" width=30px alt="cycling"
-                        title="cycling">
-                    <img onclick=selectIcon(this) class="todoIcon" src="/icon/hiking.png" width=30px alt="hiking"
-                        title="hiking">
-                    <img onclick=selectIcon(this) class="todoIcon" src="/icon/gym.png" width=30px alt="gym" title="gym">
+            <div id="iconsForBigScreen" class="col-0 col-xl-2 ">
+                <div id="iconsDiv">
+                    <h2>Ikonok</h2>
+                    <div>
+                        <h6>Sport</h6>
+                        <img onclick=selectIcon(this) class="todoIcon" src="/icon/bouldering.png" width=30px
+                            alt="bouldering" title="bouldering">
+                        <img onclick=selectIcon(this) class="todoIcon" src="/icon/running.png" width=30px alt="running"
+                            title="running">
+                        <img onclick=selectIcon(this) class="todoIcon" src="/icon/swimming.png" width=30px
+                            alt="swimming" title="swimming">
+                        <img onclick=selectIcon(this) class="todoIcon" src="/icon/cycling.png" width=30px alt="cycling"
+                            title="cycling">
+                        <img onclick=selectIcon(this) class="todoIcon" src="/icon/hiking.png" width=30px alt="hiking"
+                            title="hiking">
+                        <img onclick=selectIcon(this) class="todoIcon" src="/icon/gym.png" width=30px alt="gym"
+                            title="gym">
 
-                    <h6>Házon kívüli</h6>
-                    <img onclick=selectIcon(this) class="todoIcon" src="/icon/watering.png" width=30px alt="watering"
-                        title="watering">
-                    <img onclick=selectIcon(this) class="todoIcon" src="/icon/hammer.png" width=30px alt="hammer"
-                        title="hammer">
-                    <img onclick=selectIcon(this) class="todoIcon" src="/icon/mowing.png" width=30px alt="mowing"
-                        title="mowing">
-                    <img onclick=selectIcon(this) class="todoIcon" src="/icon/painting.png" width=30px alt="painting"
-                        title="painting">
-                    <img onclick=selectIcon(this) class="todoIcon" src="/icon/car.png" width=30px alt="car" title="car">
-                    <img onclick=selectIcon(this) class="todoIcon" src="/icon/work.png" width=30px alt="work"
-                        title="work">
-                    <img onclick=selectIcon(this) class="todoIcon" src="/icon/beach.png" width=30px alt="beach"
-                        title="beach">
+                        <h6>Házon kívüli</h6>
+                        <img onclick=selectIcon(this) class="todoIcon" src="/icon/watering.png" width=30px
+                            alt="watering" title="watering">
+                        <img onclick=selectIcon(this) class="todoIcon" src="/icon/hammer.png" width=30px alt="hammer"
+                            title="hammer">
+                        <img onclick=selectIcon(this) class="todoIcon" src="/icon/mowing.png" width=30px alt="mowing"
+                            title="mowing">
+                        <img onclick=selectIcon(this) class="todoIcon" src="/icon/painting.png" width=30px
+                            alt="painting" title="painting">
+                        <img onclick=selectIcon(this) class="todoIcon" src="/icon/car.png" width=30px alt="car"
+                            title="car">
+                        <img onclick=selectIcon(this) class="todoIcon" src="/icon/work.png" width=30px alt="work"
+                            title="work">
+                        <img onclick=selectIcon(this) class="todoIcon" src="/icon/beach.png" width=30px alt="beach"
+                            title="beach">
 
-                    <h6>Házon belüli</h6>
-                    <img onclick=selectIcon(this) class="todoIcon" src="/icon/tooth.png" width=30px alt="tooth"
-                        title="tooth">
-                    <img onclick=selectIcon(this) class="todoIcon" src="/icon/shower.png" width=30px alt="shower"
-                        title="shower">
-                    <img onclick=selectIcon(this) class="todoIcon" src="/icon/cloths.png" width=30px alt="cloths"
-                        title="cloths">
-                    <img onclick=selectIcon(this) class="todoIcon" src="/icon/cleaning.png" width=30px alt="cleaning"
-                        title="cleaning">
+                        <h6>Házon belüli</h6>
+                        <img onclick=selectIcon(this) class="todoIcon" src="/icon/tooth.png" width=30px alt="tooth"
+                            title="tooth">
+                        <img onclick=selectIcon(this) class="todoIcon" src="/icon/shower.png" width=30px alt="shower"
+                            title="shower">
+                        <img onclick=selectIcon(this) class="todoIcon" src="/icon/cloths.png" width=30px alt="cloths"
+                            title="cloths">
+                        <img onclick=selectIcon(this) class="todoIcon" src="/icon/cleaning.png" width=30px
+                            alt="cleaning" title="cleaning">
                         <img onclick=selectIcon(this) class="todoIcon" src="/icon/dishwashing.png" width=30px
-                        alt="dishwashing" title="dishwashing">
+                            alt="dishwashing" title="dishwashing">
                         <img onclick=selectIcon(this) class="todoIcon" src="/icon/boiler.png" width=30px alt="boiler"
-                        title="boiler">
+                            title="boiler">
                         <img onclick=selectIcon(this) class="todoIcon" src="/icon/healthcare.png" width=30px
-                        alt="healthcare" title="healthcare">
-                        <img onclick=selectIcon(this) class="todoIcon" src="/icon/bin.png" width=30px alt="bin" title="bin">
+                            alt="healthcare" title="healthcare">
+                        <img onclick=selectIcon(this) class="todoIcon" src="/icon/bin.png" width=30px alt="bin"
+                            title="bin">
                         <img onclick=selectIcon(this) class="todoIcon" src="/icon/trash.png" width=30px alt="trash"
-                        title="trash">
+                            title="trash">
                         <img onclick=selectIcon(this) class="todoIcon" src="/icon/money.png" width=30px alt="money"
-                        title="money">
+                            title="money">
                         <img onclick=selectIcon(this) class="todoIcon" src="/icon/shaving.png" width=30px alt="shaving"
-                        title="shaving">
-                        
+                            title="shaving">
+
                         <h6>Tanulás</h6>
                         <img onclick=selectIcon(this) class="todoIcon" src="/icon/programming.png" width=30px
-                        alt="programming" title="programming">
+                            alt="programming" title="programming">
                         <img onclick=selectIcon(this) class="todoIcon" src="/icon/english.png" width=30px alt="english"
-                        title="english">
-                        <img onclick=selectIcon(this) class="todoIcon" src="/icon/learning.png" width=30px alt="learning"
-                            title="learning">
+                            title="english">
+                        <img onclick=selectIcon(this) class="todoIcon" src="/icon/learning.png" width=30px
+                            alt="learning" title="learning">
                         <img onclick=selectIcon(this) class="todoIcon" src="/icon/reading.png" width=30px alt="reading"
                             title="reading">
                         <div>
                             <a target="_blank" href="https://icons8.com/icons/set/learning">Icons</a> icon by <a
-                            target="_blank" href="https://icons8.com">Icons8</a>
+                                target="_blank" href="https://icons8.com">Icons8</a>
                         </div>
                     </div>
                 </div>
-                <div class="col-8">
-                    <h1>Kanban tábla</h1>
-                    <div class="form-group">
-                        <div id="todoIconDiv">
-                            <!-- <img class="selectedTodoIcon" src="/icon/tooth.png" width=30px alt="tooth"> -->
-                        </div>
-                        <input class="form-control form-control-lg" type="text" placeholder="Új teendő" id="newTodoInput">
-                    <button id="addTodoButton" type="button" onclick=addNewTodo() class="btn btn-success">
-                        <i class="fa fa-plus-square" aria-hidden="true"></i>
-                        Hozzáad
-                    </button>
+            </div>
+            <div class="col-12 col-xl-7">
+                <h1>Kanban tábla</h1>
+                <div class="form-group">
+                    <div id="todoIconDiv">
+                        <!-- <img class="selectedTodoIcon" src="/icon/tooth.png" width=30px alt="tooth"> -->
+                    </div>
+                    <input class="form-control form-control-lg" type="text" placeholder="Új teendő" id="newTodoInput">
+                    <div class="btn-group" role="group" aria-label="newTodoButtons">
+                        <button id="saveTodoButton" type="button" onclick="addNewTodo('saved')" class="btn btn-primary">
+                            <i class="fa fa-floppy-o" aria-hidden="true"></i>
+                            Ment
+                        </button>
+                        <button id="addTodoButton" type="button" onclick="addNewTodo('todo')" class="btn btn-success">
+                            <i class="fa fa-plus-square" aria-hidden="true"></i>
+                            Hozzáad
+                        </button>
+                    </div>
                     <div id="newTodoAlert" class="alert alert-danger" role="alert">
                         Ez a teendő már létezik!
                     </div>
                 </div>
+                <div id="iconsForSmallScreen">
+
+                </div>
                 <div>
-                    <table class="table" id="todoTable">
+                    <table class="table table-striped" id="todoTable">
                         <thead>
                             <tr>
                                 <th scope="col">Elkészíteni</th>
@@ -116,8 +132,10 @@
                 </div>
                 <div id="savedDiv">
                 </div>
+                <div id="rightPanelSmallScreen"></div>
+
             </div>
-            <div class="col-2">
+            <div class="col-0 col-xl-3" id="rightPanelBigScreen">
                 <div id="rightPanel">
                     <div id="logButtonsDiv" class="btn-group btn-group-toggle" data-toggle="buttons">
                         <label class="btn btn-light active">
@@ -134,18 +152,14 @@
                 </div>
             </div>
         </div>
-        <div class="col-2">
-
-        </div>
 
     </div>
-    </div>
+    <script src="/js/kanbanTable.js"></script>
+    <script src="/js/newTodoPanel.js"></script>
+    <script src="/js/savedTodos.js"></script>
 
-
-
-
-    <script src="/js/main.js"></script>
     <script src="/js/dailyPanel.js"></script>
+    <script src="/js/main.js"></script>
 </body>
 
 </html>
